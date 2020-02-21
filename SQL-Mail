@@ -48,3 +48,48 @@ SELECT * FROM sysmail_log
 ---------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------
 --Mail TSQL----------------------------------------------------------------------------
+--------------- Enable Database Mail for this instance
+----------------------------------------------------------------------------------
+EXECUTE sp_configure 'show advanced', 1;
+RECONFIGURE;
+EXECUTE sp_configure 'Database Mail XPs',1;
+RECONFIGURE;
+GO
+----------------- Create a Database Mail account
+-------------------------------------------------------------------------------------
+EXECUTE msdb.dbo.sysmail_add_account_sp
+@account_name = 'Primary Account',
+@description = 'Account used by all mail profiles.',
+@email_address = 'ttaddress@ttdomain.com', -- enter your email address here
+@replyto_address = 'ttaddress@ttdomain.com', -- enter your email address here
+@display_name = 'Database Mail',
+@mailserver_name = 'mail.ttdomain.com'; -- enter your server name here
+
+---------------- Create a Database Mail profile
+--------------------------------------------------------------------------------------
+EXECUTE msdb.dbo.sysmail_add_profile_sp
+@profile_name = 'Default user Profile',
+@description = 'Default user profile for all task';
+
+------------------Add the account to the profile
+----------------------------------------------------------------------------------------
+EXECUTE msdb.dbo.sysmail_add_profileaccount_sp
+@profile_name = 'Default user Profile',
+@account_name = 'User Account',
+@sequence_number = 1;
+
+--------------------Grant access to the profile to all msdb database users
+------------------------------------------------------------------------------------------
+EXECUTE msdb.dbo.sysmail_add_principalprofile_sp
+@profile_name = 'Default user Profile',
+@principal_name = 'public',
+@is_default = 1;
+GO
+
+------------------send a test email
+-----------------------------------------------------------------------------------------------
+EXECUTE msdb.dbo.sp_send_dbmail
+@subject = 'Test Database Mail Message',
+@recipients = 'testaddress@mydomain.com', -- enter your email address here
+@query = 'SELECT @@SERVERNAME';
+GO
