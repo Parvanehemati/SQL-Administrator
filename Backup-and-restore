@@ -1,0 +1,52 @@
+-Three kinds of Backup
+--1 - Full database backup
+--2 - Differential database backup
+--3 - Transactional Log backup
+
+BACKUP DATABASE [sales]
+TO  DISK = N'c:\DBbackups\sales.bak'
+WITH NOINIT,
+NAME = N'sales-Full Database Backup',
+COMPRESSION,
+STATS = 10
+GO
+
+BACKUP LOG [sales]
+TO  DISK = N'c:\DBbackups\sales.bak'
+WITH
+NAME = N'sales-Transaction Log  Backup',
+COMPRESSION,
+STATS = 10
+GO
+
+BACKUP DATABASE [sales]
+TO  DISK = N'c:\DBbackups\sales.bak'
+WITH  DIFFERENTIAL ,
+NOINIT,
+NAME = N'sales-Differential Database Backup',
+COMPRESSION,
+STATS = 10
+GO
+
+restore headeronly from disk= N'c:\DBbackups\sales.bak'
+
+--Step for restore backup 
+--1 - first full database backup
+--2 - Last differential database backup
+--3 - Any Transactional Log backup
+ 
+
+--How to take backup without truncate log file
+
+BACKUP LOG [sales]
+TO  DISK = N'c:\DBbackups\sales.bak'
+WITH NO_TRUNCATE , --No delete or truncate log file
+COPY_ONLY ,        -- COPY_ONLY : not to break the chain of sequential t_logs the backup set
+NOFORMAT, NOINIT,
+NAME = N'sales-Transaction Log  Backup',
+COMPRESSION,
+STATS = 10
+GO
+
+SP_WHO  -- procedure to find which proccess is killing
+kill 55 -- to kill the killer proccess
