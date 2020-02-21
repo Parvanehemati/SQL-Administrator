@@ -1,0 +1,50 @@
+-- steps to set Automatic mail for SQL server
+-- show about 17 server properties 
+sp_configure
+
+-- show about 69 server properties 
+SP_CONFIGURE 'show advanced',1
+GO
+RECONFIGURE
+GO
+
+-- Record : name = Database Mail XPs should the config_value change from 0 to 1
+-- to configure database mail
+SP_CONFIGURE 'Database Mail XPs',1
+
+-- now in thr Management Database Mail appear
+
+-- for the security you have to do this
+SP_CONFIGURE 'show advanced',0
+
+-- in Database mail create a new
+-- in the server name have to inter a SMTP server name depend on email address for gmail is smtp.gmail.com  or form msn is smtp.live.com
+-- port number can be 25 or 578
+-- finish database email is ready
+
+-- in agent enable email and restart
+-- send a test email
+
+
+-- create new operator
+-- in the job modify select Notifications then select email and select operator
+
+-- important issue
+------------------------------------------------------------------------------
+-- if email does not send maybe in email sequrity is a sequrity option
+-- in your email address this address fix it
+-- https://myaccount.google.com/lesssecureapps
+
+--Database Mail keeps copies of outgoing e-mail messages and other information about mail and displays them in msdb database using the following scripts:
+use msdb
+go
+SELECT * FROM sysmail_server
+SELECT * FROM sysmail_allitems
+SELECT * FROM sysmail_sentitems
+SELECT * FROM sysmail_unsentitems
+SELECT * FROM sysmail_faileditems
+SELECT * FROM sysmail_mailitems
+SELECT * FROM sysmail_log
+---------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
+--Mail TSQL----------------------------------------------------------------------------
